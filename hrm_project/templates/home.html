@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 style="text-align:center;">HRM System Dashboard </h1>
+<p style="text-align:center;">Manage Employees, Departments, Attendance & Leave</p>
+
+<!-- DASHBOARD CARDS -->
+<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; width:80%; margin:auto;">
+
+    <a href="/admin/" class="card">
+        <h3>Admin Panel</h3>
+        <p>Manage all data</p>
+    </a>
+
+    <a href="/employees-ui/" class="card">
+        <h3>Employees</h3>
+        <p>Manage employee data</p>
+    </a>
+
+    <a href="/departments-ui/" class="card">
+        <h3>Departments</h3>
+        <p>View departments</p>
+    </a>
+
+    <a href="/attendance-ui/" class="card">
+        <h3>Attendance</h3>
+        <p>Track attendance</p>
+    </a>
+
+    <a href="/leave-ui/" class="card">
+        <h3>Leave</h3>
+        <p>Manage leave requests</p>
+    </a>
+
+</div>
+
+<hr style="margin:40px;">
+
+<!-- CHARTS SECTION -->
+<h2 style="text-align:center;">Analytics Overview 📊</h2>
+
+<div style="display:flex; flex-wrap:wrap; justify-content:space-around;">
+
+    <div style="width:300px;">
+        <h4>Employees per Department</h4>
+        <canvas id="deptChart"></canvas>
+    </div>
+
+    <div style="width:300px;">
+        <h4>Attendance</h4>
+        <canvas id="attChart"></canvas>
+    </div>
+
+    <div style="width:300px;">
+        <h4>Leave</h4>
+        <canvas id="leaveChart"></canvas>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    new Chart(document.getElementById('deptChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ dept_labels|safe }},
+            datasets: [{
+                label: 'Employees',
+                data: {{ dept_counts|safe }}
+            }]
+        }
+    });
+
+    new Chart(document.getElementById('attChart'), {
+        type: 'pie',
+        data: {
+            labels: {{ att_labels|safe }},
+            datasets: [{
+                data: {{ att_counts|safe }}
+            }]
+        }
+    });
+
+    new Chart(document.getElementById('leaveChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ leave_labels|safe }},
+            datasets: [{
+                data: {{ leave_counts|safe }}
+            }]
+        }
+    });
+
+});
+</script>
+
+{% endblock %}

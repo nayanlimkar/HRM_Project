@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Employees</h1>
+
+<a href="/add-employee/" class="btn">+ Add Employee</a>
+<form method="GET">
+
+    <input type="text" name="search" placeholder="Search Employee">
+
+    <button type="submit">Search</button>
+
+</form>
+
+
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Salary</th>
+        <th>Joining Date</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for emp in employees %}  {# ✅ Fixed: removed duplicate nested for loop #}
+    <tr>
+        <td>{{ emp.name }}</td>
+        <td>{{ emp.email }}</td>
+        <td>{{ emp.department.name }}</td>
+        <td>₹ {{ emp.salary }}</td>
+        <td>{{ emp.joining_date }}</td>
+        <td>
+            <a href="/edit-employee/{{ emp.id }}/">Edit</a>
+            <a href="/delete-employee/{{ emp.id }}/" onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6" style="text-align:center; color:#888;">No employees found.</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+<div style="margin-top:20px;">
+
+    {% if employees.has_previous %}
+        <a href="?page=1">First</a>
+
+        <a href="?page={{ employees.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span>
+        Page {{ employees.number }} of {{ employees.paginator.num_pages }}
+    </span>
+
+    {% if employees.has_next %}
+        <a href="?page={{ employees.next_page_number }}">Next</a>
+
+        <a href="?page={{ employees.paginator.num_pages }}">Last</a>
+    {% endif %}
+
+</div>
+{% endblock %}

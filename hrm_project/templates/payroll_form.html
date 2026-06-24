@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 600px; margin-left: auto; margin-right: auto;">
+  <div class="d-flex align-items-center gap-2 mb-4">
+    <a href="{% url 'payroll_list' %}" class="btn btn-sm btn-outline-secondary">← Back</a>
+    <h4 class="mb-0">Add Payroll Entry</h4>
+  </div>
+
+  <div class="card border rounded p-4">
+    <form method="post" id="payrollForm">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Department</label>
+        <select class="form-select" id="deptSelect" onchange="filterEmployees()">
+          <option value="">-- Select Department --</option>
+          {% for dept in departments %}
+            <option value="{{ dept.id }}">{{ dept.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Employee</label>
+        <select class="form-select" name="employee" id="empSelect" required>
+          <option value="">-- Select Department first --</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Month</label>
+        <input type="text" name="month" class="form-control" placeholder="e.g. May 2026" required>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Basic Salary (₹)</label>
+          <input type="number" name="basic_salary" class="form-control" placeholder="0" required onchange="calcNet()">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Bonus (₹)</label>
+          <input type="number" name="bonus" class="form-control" placeholder="0" value="0" onchange="calcNet()">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Deductions (₹)</label>
+          <input type="number" name="deductions" class="form-control" placeholder="0" value="0" onchange="calcNet()">
+        </div>
+      </div>
+
+      <div class="alert alert-success py-2 mb-3" id="netPreview" style="display:none;">
+        Net Salary: <strong id="netAmount">₹0</strong>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label fw-semibold">Status</label>
+        <select name="status" class="form-select">
+          <option value="pending">Pending</option>
+          <option value="paid">Paid</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Save Payroll Entry</button>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  const empData = {
+    {% for dept in departments %}
+      "{{ dept.id }}": [
+        {% for emp in dept.employee_set.all %}
+          { "id": "{{ emp.id }}", "name": "{{ emp.name }}" },
+        {% endfor %}
+      ],
+    {% endfor %}
+  };
+
+  function filterEmployees() {
+    const deptId = document.getElementById('deptSelect').value;
+    const empSelect = document.getElementById('empSelect');
+    empSelect.innerHTML = '<option value="">-- Select Employee --</option>';
+    if (deptId && empData[deptId]) {
+      empData[deptId].forEach(emp => {
+        const opt = document.createElement('option');
+        opt.value = emp.id;
+        opt.textContent = emp.name;
+        empSelect.appendChild(opt);
+      });
+    } else {
+      empSelect.innerHTML = '<option value="">-- Select Department first --</option>';
+    }
+  }
+
+  function calcNet() {
+    const basic = parseFloat(document.querySelector('[name=basic_salary]').value) || 0;
+    const bonus = parseFloat(document.querySelector('[name=bonus]').value) || 0;
+    const deductions = parseFloat(document.querySelector('[name=deductions]').value) || 0;
+    const net = basic + bonus - deductions;
+    document.getElementById('netAmount').textContent = '₹' + net.toLocaleString('en-IN');
+    document.getElementById('netPreview').style.display = 'block';
+  }
+</script>
+
+{% endblock %}

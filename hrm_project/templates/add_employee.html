@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Add Employee</h1>
+
+<form method="POST" id="empForm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" id="submitBtn">Save</button>
+</form>
+
+<script>
+let submitted = false;
+
+document.getElementById("empForm").addEventListener("submit", function(e) {
+    if (submitted) {
+        e.preventDefault();
+        return;
+    }
+    submitted = true;
+    document.getElementById("submitBtn").disabled = true;
+});
+</script>
+
+{% endblock %}

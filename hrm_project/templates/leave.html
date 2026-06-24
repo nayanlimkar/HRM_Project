@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h4 class="mb-0">Leave Management — By Department & Month</h4>
+  </div>
+
+  {# Filters #}
+  <div class="card p-3 mb-4 border">
+    <form method="get" class="row g-3 align-items-end">
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Department</label>
+        <select name="dept" class="form-select">
+          <option value="">All Departments</option>
+          {% for dept in departments %}
+            <option value="{{ dept.id }}" {% if selected_dept == dept.id|stringformat:"s" %}selected{% endif %}>
+              {{ dept.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Month</label>
+        <input type="month" name="month" class="form-control" value="{{ selected_month }}">
+      </div>
+
+      <div class="col-md-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+        <a href="{% url 'leave_page' %}" class="btn btn-outline-secondary w-100">Reset</a>
+      </div>
+
+    </form>
+  </div>
+
+  {% if dept_data %}
+    {% for dept_id, dept in dept_data.items %}
+
+    <div class="mb-5">
+      {# Department heading #}
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="badge bg-dark fs-6 px-3 py-2">{{ dept.name }}</span>
+        <small class="text-muted">{{ dept.employees|length }} employee(s)</small>
+      </div>
+
+      {% for emp_id, emp in dept.employees.items %}
+      <div class="card mb-3 border shadow-sm">
+
+        {# Employee header row #}
+        <div class="card-header d-flex justify-content-between align-items-center bg-light">
+          <strong>{{ emp.name }}</strong>
+          <div class="d-flex gap-3">
+            <span class="text-success fw-semibold">✔ Approved: {{ emp.approved }}</span>
+            <span class="text-warning fw-semibold">⏳ Pending: {{ emp.pending }}</span>
+            <span class="text-danger fw-semibold">✘ Rejected: {{ emp.rejected }}</span>
+            <span class="text-secondary">Total: {{ emp.records|length }}</span>
+          </div>
+        </div>
+
+        {# Leave records table #}
+        <div class="card-body p-0">
+          <table class="table table-sm table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-3">Reason</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for leave in emp.records %}
+              <tr>
+                <td class="ps-3">{{ leave.reason }}</td>
+                <td>{{ leave.start_date }}</td>
+                <td>{{ leave.end_date }}</td>
+                <td>
+                  {% if leave.status|lower == "approved" %}
+                    <span class="badge bg-success">Approved</span>
+                  {% elif leave.status|lower == "pending" %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                  {% elif leave.status|lower == "rejected" %}
+                    <span class="badge bg-danger">Rejected</span>
+                  {% else %}
+                    <span class="badge bg-secondary">{{ leave.status }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if leave.status|lower == "pending" %}
+                    <a href="/approve-leave/{{ leave.id }}/" class="btn btn-sm btn-success">Approve</a>
+                    <a href="/reject-leave/{{ leave.id }}/" class="btn btn-sm btn-danger">Reject</a>
+                  {% else %}
+                    <span class="text-muted small">No actions</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+
+    {% endfor %}
+
+  {% else %}
+    <div class="alert alert-info text-center">
+      No leave records found. Try adjusting the filters.
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

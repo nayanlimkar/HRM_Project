@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HRM System</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #f4f6f9;
+        }
+
+        .navbar {
+            background: #333;
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .navbar a:hover {
+            color: #00c6ff;
+        }
+
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
+
+        /*  Fixed: style submit buttons inside forms to match .btn */
+        button[type="submit"],
+        input[type="submit"] {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover,
+        input[type="submit"]:hover {
+            background: #5a67d8;
+        }
+
+        .card {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <a href="/">Dashboard</a>
+        <a href="/employees-ui/">Employees</a>
+        <a href="/departments-ui/">Departments</a>
+        <a href="/attendance-ui/">Attendance</a>
+        <a href="/leave-ui/">Leave</a>
+        <a href="/admin/">Admin</a>
+        <a class="nav-link" href="{% url 'payroll_list' %}">Payroll</a>
+    </div>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>
